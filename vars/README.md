@@ -1,13 +1,15 @@
-## Short Description
-My ansible roles playground for docker and zsh
+[![Build Status](https://travis-ci.org/viasite-ansible/ansible-role-zsh.svg?branch=master)](https://travis-ci.org/viasite-ansible/ansible-role-zsh)
 
-[![Build Status](TBD)
+Tested on Debian 10, Ubuntu 16.04, Ubuntu 18.04, Ubuntu 20.04, macOS 10.12, CentOS 8.
 
-Tested on CentOS 8, Fedora 37
+**For upgrade from viasite-ansible.zsh 1.x, 2.x to 3.0 see [below](#upgrade).**
+
 
 
 ## Zero-knowledge install:
-If you using Centos and not familiar with Ansible, you can just execute [install.sh](install.sh) on target machine:
+If you using Ubuntu or Debian and not familiar with Ansible, you can just execute [install.sh](install.sh) on target machine:
+```
+curl https://raw.githubusercontent.com/viasite-ansible/ansible-role-zsh/master/install.sh | bash
 ```
 It will install pip3, ansible and setup zsh for root and current user.
 
@@ -15,7 +17,6 @@ Then [configure terminal application](#configure-terminal-application).
 
 
 ## Includes:
-- docker
 - zsh
 - [antigen](https://github.com/zsh-users/antigen)
 - [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
@@ -27,21 +28,47 @@ Then [configure terminal application](#configure-terminal-application).
 - [urbainvaes/fzf-marks](https://github.com/popstas/urbainvaes/fzf-marks)
 
 ## Features
-- docker, docker-compose
 - customize powerlevel9k theme prompt segments and colors
 - default colors tested with solarized dark and default grey terminal in putty
 - add custom prompt elements from yml
 - custom zsh config with `~/.zshrc.local` or `/etc/zshrc.local`
 - load `/etc/profile.d` scripts
+- install only plugins that useful for your machine. For example, plugin `docker` will not install if you have not Docker
+
+## 1.5 mins demo
+![1.5 mins demo](https://github.com/popstas/popstas.github.io/blob/master/images/2017-03/ansible-role-zsh-demo.gif?raw=true)
+
+## Color schemes
+![colors demo](https://github.com/popstas/popstas.github.io/blob/master/images/2017-03/ansible-role-zsh-colors.gif?raw=true)
+
+## Midnight Commander Solarized Dark skin
+If you using Solarized Dark scheme and `mc`, you should want to install skin, then set `zsh_mc_solarized_skin: yes`
+
+
+## Demo install in Vagrant
+You can test work of role before install in real machine.
+Just execute `vagrant up`, then `vagrant ssh` for enter in virtual machine.
+
+Note: you cannot install vagrant on VPS like Digital Ocean or in Docker. Use local machine for it.
+[Download](https://www.vagrantup.com/downloads.html) and install vagrant for your operating system.
+
+
+
+## Install for real machine
+Zero-knowledge install: see [above](#zero-knowledge-install).
+
+### Manual install
 
 0. [Install Ansible](http://docs.ansible.com/ansible/intro_installation.html).
-For Centos:
+For Ubuntu:
 ``` bash
-sudo dnf update
-sudo dnf install python3-pip -y
+sudo apt update
+sudo apt install python3-pip -y
 sudo pip3 install ansible
 ```
 
+1. Download role:
+```
 ansible-galaxy install viasite-ansible.zsh --force
 ```
 
@@ -54,12 +81,17 @@ ansible-galaxy install viasite-ansible.zsh --force
       - joel-porquet/zsh-dircolors-solarized
     zsh_autosuggestions_bind_key: "^U"
   roles:
-    - ansible-playground.zsh
+    - viasite-ansible.zsh
 ```
 
 3. Provision playbook:
 ```
 ansible-playbook -i "localhost," -c local -K playbook.yml
+```
+
+If you want to provision role for root user on macOS, you should install packages manually:
+```
+brew install zsh git wget
 ```
 
 It will install zsh environment for ansible remote user. If you want to setup zsh for other users,
@@ -78,6 +110,14 @@ Or via command:
 ansible-playbook -i hosts zsh.yml -e zsh_user=otheruser
 ```
 
+4. Install fzf **without shell extensions**, [download binary](https://github.com/junegunn/fzf-bin/releases)
+or `brew install fzf` for macOS.
+
+Note: I don't use `tmux-fzf` and don't tested work of it.
+
+
+
+## Multiuser shared install
 If you have 10+ users on host, probably you don't want manage tens of configurations and thousands of files.
 
 In this case you can deploy single zsh config and include it to all users.
@@ -112,7 +152,7 @@ You can see screenshots [here](https://github.com/powerline/fonts/blob/master/sa
 
 2. Set color scheme.
 
-TBD
+Personaly, I prefer Solarized Dark color sceme, Droid Sans Mono for Powerline in iTerm and DejaVu Sans Mono in Putty.
 
 #### iTerm
 Profiles - Text - Change Font - select font "for Powerline"
@@ -182,8 +222,8 @@ zsh_aliases:
 
 ## Configure bundles
 You can check default bundles in [defaults/main.yml](defaults/main.yml#L37).
-TBD
-
+If you like default bundles, but you want to add your bundles, use `zsh_antigen_bundles_extras` variable (see example playbook above).
+If you want to remove some default bundles, you should use `zsh_antigen_bundles` variable.
 
 Format of list matches [antigen](https://github.com/zsh-users/antigen#antigen-bundle). All bellow variants valid:
 ``` yaml

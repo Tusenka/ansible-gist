@@ -1,0 +1,14 @@
+---
+
+- include_tasks: docker-Centos.yml
+  tags:
+    - docker
+    - install
+- include_tasks: docker-compose.yml
+  tags:
+    - docker
+    - install
+- include_tasks: zsh.yml
+  tags:
+    - zsh
+    - install
